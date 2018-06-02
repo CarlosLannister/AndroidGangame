@@ -10,8 +10,8 @@ data class Deal(var title: String,
                 var thumb: String)
 
 data class TopGame(@SerializedName("name") var title: String,
-                   val publicsher: String,
+                   val publisher: String,
                    @SerializedName("score_rank") var steamRating: Int,
-                   val owners: Int,
+                   val owners: String,
                    val price: Float,
                    var thumb: String)
