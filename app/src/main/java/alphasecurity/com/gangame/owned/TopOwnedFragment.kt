@@ -3,8 +3,10 @@ package alphasecurity.com.gangame.owned
 import alphasecurity.com.commons.BaseListFragment
 import alphasecurity.com.commons.DataBindingRecyclerAdapter
 import alphasecurity.com.gangame.BR
+import alphasecurity.com.gangame.Deal
 import alphasecurity.com.gangame.R
 import alphasecurity.com.gangame.TopGame
+import alphasecurity.com.gangame.data.GangameDataSource
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.View
@@ -15,16 +17,28 @@ class TopOwnedFragment : BaseListFragment(){
         return DataBindingRecyclerAdapter<TopGame>(BR.topGame, R.layout.item_top_game)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (listAdapter as DataBindingRecyclerAdapter<TopGame>).items.addAll(getDummyTopGame())
-        listAdapter.notifyDataSetChanged()
+    override fun onResume() {
+        super.onResume()
+        showTopOwnedGames()
     }
 
-    fun getDummyTopGame(): ArrayList<TopGame>{
-        return arrayListOf(TopGame("Counter Strike", 13407338, 80,
-                "Valve",9.99F,
-                1, "https://0901.static.prezi.com/preview/uluorts4rigx3gqob2ictrnawd6jc3sachvcdoaizecfr3dnitcq_0_0.png"))
+    private fun showTopOwnedGames() {
+        GangameDataSource.getTopOwnedGames().subscribe({ list ->
+            replaceItems(list)
+        }, {error ->
+            showError(error)
+        })
     }
 
+    private fun replaceItems(list: List<TopGame>){
+        with (listAdapter as DataBindingRecyclerAdapter<TopGame>){
+            items.clear()
+            items.addAll(list)
+            notifyDataSetChanged()
+        }
+    }
+
+    private fun showError(error: Throwable){
+        error.printStackTrace()
+    }
 }

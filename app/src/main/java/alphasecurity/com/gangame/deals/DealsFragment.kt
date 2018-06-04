@@ -5,9 +5,13 @@ import alphasecurity.com.commons.DataBindingRecyclerAdapter
 import alphasecurity.com.gangame.BR
 import alphasecurity.com.gangame.Deal
 import alphasecurity.com.gangame.R
+import alphasecurity.com.gangame.TopGame
+import alphasecurity.com.gangame.data.GangameDataSource
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
 import android.view.View
+import io.reactivex.Observer
+import io.reactivex.disposables.Disposable
 
 class DealsFragment : BaseListFragment() {
 
@@ -15,15 +19,28 @@ class DealsFragment : BaseListFragment() {
         return DataBindingRecyclerAdapter<Deal>(BR.deal, R.layout.item_deal)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        (listAdapter as DataBindingRecyclerAdapter<Deal>).items.addAll(getDummyDeals())
-        listAdapter.notifyDataSetChanged()
+    override fun onResume() {
+        super.onResume()
+        showDeals()
     }
 
-    fun getDummyDeals(): ArrayList<Deal> {
-        return arrayListOf(Deal("Counter Strike", 0.99F, 9.99F,
-                80, 80,
-                "https://0901.static.prezi.com/preview/uluorts4rigx3gqob2ictrnawd6jc3sachvcdoaizecfr3dnitcq_0_0.png"))
+    private fun showDeals() {
+        GangameDataSource.getDeals().subscribe({ list ->
+            replaceItems(list)
+        }, {error ->
+            showError(error)
+        })
+    }
+
+    private fun replaceItems(list: List<Deal>){
+        with (listAdapter as DataBindingRecyclerAdapter<Deal>){
+            items.clear()
+            items.addAll(list)
+            notifyDataSetChanged()
+        }
+    }
+
+    private fun showError(error: Throwable){
+        error.printStackTrace()
     }
 }

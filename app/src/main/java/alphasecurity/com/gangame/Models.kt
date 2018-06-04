@@ -20,7 +20,7 @@ data class Deal(var title:String, var salePrice: Float,
 
 
 
-data class TopGame(var title: String, var owners: Int,
+data class TopGame(var title: String, var owners: String,
                    var steamRating: Int, var publisher: String,
                    var price: Float, var position: Int, var thumb: String){
 
